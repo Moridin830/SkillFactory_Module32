@@ -23,6 +23,7 @@ namespace Task2.Models.Db.Context
         // Логика взаимодействия с таблицами в БД
         public BlogContext(DbContextOptions<BlogContext> options) : base(options)
         {
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
     }

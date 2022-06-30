@@ -34,7 +34,7 @@ namespace Task2.Repositories.LoggerRepository
         public async Task<Request[]> GetRequests()
         {
             //// Получим всех активных пользователей
-            return await _context.Re.ToArrayAsync();
+            return await _context.Requests.ToArrayAsync();
         }
     }
 }

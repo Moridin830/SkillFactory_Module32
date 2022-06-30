@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Task2.Models;
+using Task2.Models.Db;
+using Task2.Models.Db.Context;
 using Task2.Repositories;
 using Task2.Repositories.LoggerRepository;
 
@@ -17,28 +19,28 @@ namespace Task2.Middlewares
     {
         private readonly RequestDelegate _next;
         private ILoggingRepository _loggingRepository;
+        private BlogContext _blogContext;
 
-        /// <summary>
-        ///  Middleware-компонент должен иметь конструктор, принимающий RequestDelegate
-        /// </summary>
+        ///// <summary>
+        /////  Middleware-компонент должен иметь конструктор, принимающий RequestDelegate
+        ///// </summary>
         public LoggingMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
-        public LoggingMiddleware(RequestDelegate next, ILoggingRepository loggingRepository)
+        public async Task InvokeAsync(HttpContext context, ILoggingRepository loggingRepository)
         {
-            _next = next;
             _loggingRepository = loggingRepository;
-        }
 
-        /// <summary>
-        ///  Необходимо реализовать метод Invoke  или InvokeAsync
-        /// </summary>
-        public async Task InvokeAsync(HttpContext context)
-        {
-            // Для логирования данных о запросе используем свойста объекта HttpContext
-            Console.WriteLine($"[{DateTime.Now}]: New request to http://{context.Request.Host.Value + context.Request.Path}");
+            Request request = new()
+            {
+                Url = $"http://{context.Request.Host.Value + context.Request.Path}",
+                Date = DateTime.Now,
+                Id = Guid.NewGuid()
+            };
+           
+            _loggingRepository.AddRequest(request);
 
             // Передача запроса далее по конвейеру
             await _next.Invoke(context);

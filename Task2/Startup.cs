@@ -31,11 +31,10 @@ namespace Task2
         public void ConfigureServices(IServiceCollection services)
         {
             // регистрация сервиса репозитория для взаимодействия с базой данных
-            services.AddScoped<ILoggingRepository, LoggingRepository>();
             services.AddScoped<IBlogRepository, BlogRepository>();
+            services.AddScoped<ILoggingRepository, LoggingRepository>();
             string connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<BlogContext>(options => options.UseSqlServer(connection));
-            services.AddScoped<BlogContext>(options => options.UseSqlServer(connection)>;
             services.AddControllersWithViews();
         }
 
@@ -54,14 +53,14 @@ namespace Task2
             }
             // Подключаем логирование с использованием ПО промежуточного слоя
             string connection = Configuration.GetConnectionString("DefaultConnection");
-            app.UseMiddleware<LoggingMiddleware>(, options => options.UseSqlServer(connection));
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseMiddleware<LoggingMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
